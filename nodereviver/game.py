@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    @author: Vincent Petry <PVince81@yahoo.fr>
+    @author: Elise and David Plans <davidplans@gmail.com> based on the original, created by Vincent Petry <PVince81@yahoo.fr>
 '''
 import pygame
 import model
@@ -49,7 +49,7 @@ class Game:
         sound.soundManager.init(self._config)
         pygame.init()
         self._initDisplay()
-        pygame.display.set_caption('Node Reviver - by Vincent Petry (MiniLD#33)')
+        pygame.display.set_caption('EBPMG Demo - Elise and David Plans')
         pygame.mouse.set_visible(False)
         self._screen = pygame.display.get_surface()
         self._clock = pygame.time.Clock()

@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    @author: Vincent Petry <PVince81@yahoo.fr>
+    @author: Elise and David Plans <davidplans@gmail.com> based on the original, created by Vincent Petry <PVince81@yahoo.fr>
 '''
 from nodereviver.config import Config
 import optparse

@@ -481,7 +481,7 @@ class Story(object):
     def __init__(self, context, text):
         self._font = context.bigFont
         font2 = context.biggerFont
-        self._pressEnterSurface = font2.render("Press ENTER to continue", False, (0, 255, 0))
+        self._pressEnterSurface = font2.render("Press ENTER", False, (0, 255, 0))
         self._textIndex = 0
         self._rowIndex = 0
         self._text = text
@@ -744,8 +744,9 @@ class TitleScreen(object):
         self._font = context.bigFont
         self._font2 = context.normalFont
         fontHeight = self._font.get_height()
-        self._textSurface = self._font.render("Press ENTER to start playing", False, (0, 192, 0))
-        self._text2Surface = self._font2.render("Copyright \xa9 2012 Vincent Petry (for MiniLD #33)", False, (0, 192, 0))
+        self._textSurface = self._font.render("Press ENTER", False, (0, 192, 0))
+        self._textSurface = self._font2.render(("CC license for this version by Elise and David Plans."), False, (0, 192, 20))
+        self._text2Surface = self._font2.render(("Copyright for MiniLD #33 version reserved by \xa9 2012 Vincent Petry"), False, (0, 192, 0))
         rect = self._textSurface.get_rect()
         screenRect = context.screen.get_rect()
         self._pos = (context.boardSize[0] / 2 - rect[2] / 2, 195)
