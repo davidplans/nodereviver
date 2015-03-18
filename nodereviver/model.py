@@ -408,17 +408,30 @@ class Entity(object):
 
 class Player(Entity):
     entityType = 0
+    visitedMarked = 0.0
+    visitedNonMarked = 0.0    
     def __init__(self, currentNode = None):
         Entity.__init__(self, currentNode)
         self.speed = 2
         self.justMarked = False
 
+    def frustration(self):
+        tot = self.visitedMarked + self.visitedNonMarked
+        if tot > 0:
+            return self.visitedMarked / tot
+        else:
+            return 0.0
+
     def onEdgeComplete(self, edge):
         if not edge.isMarked():
+            self.visitedNonMarked += 1.0
             markedNodes = edge.setMarked(True)
             if len(markedNodes) > 0:
                 sound.soundManager.play(sound.soundManager.DRAW)
-
+        else:
+            self.visitedMarked += 1.0
+        print self.frustration()
+        
     def onStopMoving(self):
         if self.currentNode.type != Node.JOINT:
             sound.soundManager.play(sound.soundManager.MOVE)
