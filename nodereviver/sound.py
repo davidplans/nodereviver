@@ -22,7 +22,7 @@ class _SoundManager:
     MOVE = 0
     DEAD = 1
     DRAW = 2
-    FILES = [
+    FILES = [n
         "move.wav",
         "dead.wav",
         "draw.wav"
