@@ -46,7 +46,7 @@ class Game:
         self._worldLoader = WorldLoader(self._config.dataPath)
         self._gameCount = 0
         self._deaths = 0
-        
+
     def _init(self):
         sound.soundManager.init(self._config)
         pygame.init()
@@ -63,6 +63,7 @@ class Game:
             self._gameUI = None
 
         sound.soundManager.loadSounds()
+        sound.soundManager.startEngine()
 
     def _quit(self):
         sound.soundManager.release()
@@ -236,7 +237,7 @@ class Game:
             pygame.display.set_caption('planning={0} fear={1} frustration={2}'.format(str(planning),str(fear),str(frustration)))
 
 
-            
+
     def onLevelEnd(self):
         if self._gameState.state == GameState.TITLE:
             self._startTitle()
