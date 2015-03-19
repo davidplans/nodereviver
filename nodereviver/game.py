@@ -212,7 +212,10 @@ class Game:
                     self._player.die()
                     state.setState(GameState.DEAD, 1000, GameState.RESTART_LEVEL)
                     sound.soundManager.play(sound.soundManager.DEAD)
-
+            # add frustration check
+            # for now display it on the title bar
+            pygame.display.set_caption('frustration={0}'.format(str(self._player.frustration())))
+        
     def onLevelEnd(self):
         if self._gameState.state == GameState.TITLE:
             self._startTitle()
@@ -260,7 +263,9 @@ class Game:
 
         # set tracking foes to track the player
         for entity in self._world.entities:
-            if entity.entityType == 1 and entity.foeType == 1:
+            #if entity.entityType == 1 and entity.foeType == 1:
+            # also simpleFoes track player, not follow him, but track him
+            if entity.entityType == 1:
                 entity.track(self._player)
 
     def run(self):

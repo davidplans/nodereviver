@@ -450,33 +450,6 @@ class Foe(Entity):
     def __init__(self, currentNode = None):
         Entity.__init__(self, currentNode)
 
-class SimpleFoe(Foe):
-    '''
-    Simple foe that randomly changes direction.
-    '''
-    foeType = 0
-    def __init__(self, currentNode = None):
-        Foe.__init__(self, currentNode)
-        self.speed = 1
-        self.lastEdge = None
-
-    def update(self):
-        if self.moving:
-            Foe.update(self)
-        else:
-            # find path
-            nextEdges = self.currentNode.getOutgoingEdges()
-            index = random.randint(0, len(nextEdges) - 1)
-            nextEdge = nextEdges[index]
-            if nextEdge == self.lastEdge:
-                if index >= len(nextEdges) - 1:
-                    nextEdge = nextEdges[0]
-                else:
-                    nextEdge = nextEdges[index + 1]
-            self.moveAlong(nextEdge)
-
-    def onEdgeComplete(self, edge):
-        self.lastEdge = edge
 
 class TrackingFoe(Foe):
     '''
@@ -491,10 +464,17 @@ class TrackingFoe(Foe):
         self._trackedTarget = None
         self._path = []
         self._sleepTicks = 0
-
+        self.lastEdge = None
+        
     def track(self, trackedEntity):
         self._trackedEntity = trackedEntity
         self._path = []
+
+    def distanceFromTarget(self):
+        if self._path != None and len(self._path) > 0:
+            return len(self._path)
+        else:
+            return 99
 
     def update(self):
         if self._sleepTicks > 0:
@@ -522,6 +502,44 @@ class TrackingFoe(Foe):
                 if targetNode != self.currentNode:
                     self._path = pathFinder.findShortestPath(self.currentNode, targetNode)
                     self._trackedTarget = targetNode
+
+
+class SimpleFoe(TrackingFoe):
+    '''
+    Simple foe that randomly changes direction.
+    '''
+    foeType = 0
+
+    def onEdgeComplete(self, edge):
+        self.lastEdge = edge
+
+    def update(self):
+        if self.moving:
+            Foe.update(self)
+        else:
+            # find path
+            nextEdges = self.currentNode.getOutgoingEdges()
+            index = random.randint(0, len(nextEdges) - 1)
+            nextEdge = nextEdges[index]
+            if nextEdge == self.lastEdge:
+                if index >= len(nextEdges) - 1:
+                    nextEdge = nextEdges[0]
+                else:
+                    nextEdge = nextEdges[index + 1]
+            self.moveAlong(nextEdge)
+            # update path, this foe doesn't care about the target
+            # but we want to know how far the target is
+            targetNode = self._trackedEntity.currentNode
+            if self._trackedEntity.moving:
+                # directly go to that entity's target
+                targetNode = self._trackedEntity.getFinalTargetNode()
+            if targetNode != self.currentNode:
+                self._path = pathFinder.findShortestPath(self.currentNode, targetNode)
+                self._trackedTarget = targetNode
+
+
+        
+
 
 class GameState(object):
     TITLE = 0
