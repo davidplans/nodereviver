@@ -19,17 +19,20 @@
 import pygame
 import model
 import view
-import sound
+#import sound
+from pylibpd import *
 import time
 import ui
 from util import *
 from config import Config
 from WorldLoaderJson import WorldLoader
 from model import GameState
+import numpy
 
 class Game:
     titleDemo = [3,0,0,3,0,1,2,1,1,3,0,2,0,3,1,2,1,3,0,2,0,3,1,2,1,3,0,2,0,0,3,2,1,3,2,1,3,3,2,1,3,1,2,2,2,2,2,2,2,1,2,1,1,0,3,1,2,3,0,2,0,3,1,2,1,1,3,2,0,3,2,0,3,3,2,0,3,1,1,3,3,3,0,0,1,2,2,0,0,0,3,1,1,2,3,3,2,0,2,3,3,2,0,3,1,1,3,3,0,0,1,2,2,0,0,0,3,1,3,2,2,1,3,2,1,3,2,0,0,3,0,3,1,2,1,1,0,0,3,3,1,2,2,3,1,1,2]
 
+    
     def __init__(self, config):
         self._config = config
         if self._config.dataPath[-1] != '/':
@@ -46,10 +49,34 @@ class Game:
         self._worldLoader = WorldLoader(self._config.dataPath)
         self._gameCount = 0
         self._deaths = 0
-
+        self._pdManager = None
+        self._ch = None
+        self._inbuf = None
+        self._sounds = None
+        self._samples = None
+        self._patch = None
+        self._BUFFERSIZE = 1024
+        self._BLOCKSIZE = 64
+        self._SAMPLERATE = 44100
+        self._selector = 0
+        
     def _init(self):
-        sound.soundManager.init(self._config)
+        #sound.soundManager.init(self._config)
         pygame.init()
+        self._pdManager = PdManager(1,2,self._SAMPLERATE, 1)
+        libpd_add_to_search_path('engine/')
+        self._patch = libpd_open_patch('engine/futureuser_EVA.pd', '.')
+        print "$0: ", self._patch
+
+        # this is basically a dummy since we are not actually going to read from the mic
+        self._inbuf = array.array('h', range(self._BLOCKSIZE))
+
+        # the pygame channel that we will use to queue up buffers coming from pd
+        self._ch = pygame.mixer.Channel(0)
+        # python writeable sound buffers
+        self._sounds = [pygame.mixer.Sound(numpy.zeros((self._BUFFERSIZE, 2), numpy.int16)) for s in range(2)]
+        self._samples = [pygame.sndarray.samples(s) for s in self._sounds]
+        
         self._initDisplay()
         pygame.display.set_caption('Node Reviver - by Vincent Petry (MiniLD#33)')
         pygame.mouse.set_visible(False)
@@ -62,11 +89,12 @@ class Game:
         else:
             self._gameUI = None
 
-        sound.soundManager.loadSounds()
-        sound.soundManager.startEngine()
+        #sound.soundManager.loadSounds()
+        #sound.soundManager.startEngine()
 
     def _quit(self):
-        sound.soundManager.release()
+        #sound.soundManager.release()
+        libpd_release()
         pygame.quit()
 
     def _initDisplay(self):
@@ -214,7 +242,7 @@ class Game:
                 if abs(dist[0]) < 10 and abs(dist[1]) < 10:
                     self._player.die()
                     state.setState(GameState.DEAD, 1000, GameState.RESTART_LEVEL)
-                    sound.soundManager.play(sound.soundManager.DEAD)
+                    #sound.soundManager.play(sound.soundManager.DEAD)
                     self._deaths += 1
             # add frustration check
             # for now display it on the title bar
@@ -253,7 +281,7 @@ class Game:
         self._gameState.setState(GameState.LEVEL_START, 1000)
         self._gameState.worldNum = worldNum
         self._initWorld(self._gameState.worldNum)
-        sound.soundManager.enable()
+        #sound.soundManager.enable()
 
     def _startTitle(self):
         self._gameState.state = GameState.TITLE
@@ -269,7 +297,7 @@ class Game:
             self._player.speed = 4
             self._world = self._worldLoader.loadWorld(0)
             self._titleDemo = list(self.titleDemo)
-            sound.soundManager.enable(False)
+            #sound.soundManager.enable(False)
         else:
             self._world = self._worldLoader.loadWorld(worldNum)
         self._world.centerInView(self._display.context.boardSize)
@@ -291,6 +319,22 @@ class Game:
                 entity.track(self._player)
         self._gameCount += 1
 
+    def processAudio(self):
+        if not self._ch.get_queue():
+            # make sure we fill the whole buffer
+            for x in range(self._BUFFERSIZE):
+                # let's grab a new block from Pd each time we're out of BLOCKSIZE data
+                if x % self._BLOCKSIZE == 0:
+                    outbuf = self._pdManager.process(self._inbuf)
+                # de-interlace the data coming from libpd
+                self._samples[self._selector][x][0] = outbuf[(x % self._BLOCKSIZE) * 2]
+                self._samples[self._selector][x][1] = outbuf[(x % self._BLOCKSIZE) * 2 + 1]
+            # queue up the buffer we just filled to be played by pygame
+            self._ch.queue(self._sounds[self._selector])
+            # next time we'll do the other buffer
+            self._selector = int(not self._selector)
+
+        
     def run(self):
         self._init()
         self._gameState.state = GameState.TITLE
@@ -301,6 +345,8 @@ class Game:
         # desired fps is 60
         fpsMax = 1000 / 60
         while not self._terminated:
+            # libpd stuff
+            self.processAudio()
             self._handleInput()
             if self._gameState.focus:
                 # frameskip
@@ -309,6 +355,7 @@ class Game:
                 updateSteps = deltaTime / fpsMax
                 for x in range(updateSteps):
                     self._handleLogic()
+                    self.processAudio()
 
                 deltaTime = deltaTime % fpsMax
                 lastTime = newTime
@@ -316,6 +363,7 @@ class Game:
                 if not self._gameState.pause:
                     for x in range(updateSteps):
                         self._display.update()
+                        self.processAudio()
                     self._display.render()
                     pygame.display.flip()
 
