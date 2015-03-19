@@ -62,6 +62,7 @@ class Game:
         
     def _init(self):
         #sound.soundManager.init(self._config)
+        pygame.mixer.pre_init(44100, -16, 2, 256)
         pygame.init()
         self._pdManager = PdManager(1,2,self._SAMPLERATE, 1)
         libpd_add_to_search_path('engine/')
