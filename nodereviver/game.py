@@ -44,7 +44,9 @@ class Game:
         self._gameState = model.GameState()
         self._player = None
         self._worldLoader = WorldLoader(self._config.dataPath)
-
+        self._gameCount = 0
+        self._deaths = 0
+        
     def _init(self):
         sound.soundManager.init(self._config)
         pygame.init()
@@ -212,6 +214,7 @@ class Game:
                     self._player.die()
                     state.setState(GameState.DEAD, 1000, GameState.RESTART_LEVEL)
                     sound.soundManager.play(sound.soundManager.DEAD)
+                    self._deaths += 1
             # add frustration check
             # for now display it on the title bar
             nFoes = 0
@@ -225,9 +228,12 @@ class Game:
                         nFoes += 1
                         sumDist += thisDist
             averageDist = 99
+            planning = 1.0 - self._player.frustration()
+            frustration = float(self._deaths)/float(self._gameCount)
             if nFoes > 0:
                 averageDist = float(sumDist) / float(nFoes)
-            pygame.display.set_caption('frustration={0} averge distance={1}'.format(str(self._player.frustration()),str(averageDist)))
+            fear = 1.0/averageDist
+            pygame.display.set_caption('planning={0} fear={1} frustration={2}'.format(str(planning),str(fear),str(frustration)))
 
 
             
@@ -282,6 +288,7 @@ class Game:
             # also simpleFoes track player, not follow him, but track him
             if entity.entityType == 1:
                 entity.track(self._player)
+        self._gameCount += 1
 
     def run(self):
         self._init()
