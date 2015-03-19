@@ -474,7 +474,7 @@ class TrackingFoe(Foe):
         if self._path != None and len(self._path) > 0:
             return len(self._path)
         else:
-            return 99
+            return -1
 
     def update(self):
         if self._sleepTicks > 0:

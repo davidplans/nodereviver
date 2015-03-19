@@ -214,8 +214,23 @@ class Game:
                     sound.soundManager.play(sound.soundManager.DEAD)
             # add frustration check
             # for now display it on the title bar
-            pygame.display.set_caption('frustration={0}'.format(str(self._player.frustration())))
-        
+            nFoes = 0
+            sumDist = 0
+            for entity in self._world.entities:
+                #if entity.entityType == 1 and entity.foeType == 1:
+                # also simpleFoes track player, not follow him, but track him
+                if entity.entityType == 1:
+                    thisDist = entity.distanceFromTarget()
+                    if thisDist >= 0:
+                        nFoes += 1
+                        sumDist += thisDist
+            averageDist = 99
+            if nFoes > 0:
+                averageDist = float(sumDist) / float(nFoes)
+            pygame.display.set_caption('frustration={0} averge distance={1}'.format(str(self._player.frustration()),str(averageDist)))
+
+
+            
     def onLevelEnd(self):
         if self._gameState.state == GameState.TITLE:
             self._startTitle()
