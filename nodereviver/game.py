@@ -47,6 +47,7 @@ class Game:
         self._worldLoader = WorldLoader(self._config.dataPath)
         self._gameCount = 0
         self._deaths = 0
+        self._lastUpdate = 0
         
     def _init(self):
         sound.soundManager.init(self._config)
@@ -87,6 +88,7 @@ class Game:
         edge = self._player.currentNode.getEdgeByDirection(movement)
         if edge:
             self._player.moveAlong(edge)
+        sound.soundManager.sendMove()
 
     def _handleInputEvent(self, event):
         action = None
@@ -218,6 +220,11 @@ class Game:
                     #sound.soundManager.play(sound.soundManager.DEAD)
                     self._deaths += 1
                     sound.soundManager.sendDeath()
+            self.sendUpdates()
+
+    def sendUpdates(self):
+        if pygame.time.get_ticks() - self._lastUpdate > 500:
+            self._lastUpdate = pygame.time.get_ticks()
             # add frustration check
             # for now display it on the title bar
             nFoes = 0
@@ -239,9 +246,9 @@ class Game:
                 averageDist = float(sumDist) / float(nFoes)
             fear = 1.0/averageDist
             sound.soundManager.sendFear(fear)
+            sound.soundManager.sendNumberOfFoes(nFoes)
             pygame.display.set_caption('planning={0} fear={1} frustration={2}'.format(str(planning),str(fear),str(frustration)))
-
-
+            
 
     def onLevelEnd(self):
         if self._gameState.state == GameState.TITLE:
@@ -277,6 +284,7 @@ class Game:
             #sound.soundManager.enable(False)
         else:
             self._world = self._worldLoader.loadWorld(worldNum)
+        self._player.world = self._world
         self._world.centerInView(self._display.context.boardSize)
         self._player.setCurrentNode(self._world.startNode)
         if self._gameUI:

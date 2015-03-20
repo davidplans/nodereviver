@@ -110,20 +110,38 @@ class _SoundManager:
 
     def sendFrustration(self, frustration):
         libpd_float('frustration', frustration)
+        print "frustration %.2f" % frustration
 
     def sendPlanning(self, planning):
         libpd_float('planning', planning)
+        print "planning %.2f" % planning
 
     def sendFear(self, fear):
         libpd_float('fear', fear)
+        print "fear %.2f" % fear
 
     def sendDeath(self):
         libpd_bang('death')
+        print "death"
 
     def sendVictory(self):
         libpd_bang('victory')
+        print "victory"
 
     def sendMove(self):
         libpd_bang('move')
+        print "move"
+
+    def sendNumberOfFoes(self, foes):
+        libpd_float('foes', foes)
+        print "foes %.2f" % foes
+
+    def sendCompletionRatio(self, r):
+        libpd_float('completion', r)
+        print "completion %.2f" % r
+
+    def sendCompletedEdge(self):
+        libpd_bang('completedEdge')
+        print "completed edge" 
         
 soundManager = _SoundManager()

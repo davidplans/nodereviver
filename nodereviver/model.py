@@ -183,6 +183,15 @@ class World(object):
         _nextEdgeId = 1
         _nextNodeId = 1
 
+    def completionRatio(self):
+        if len(self.edges) > 0:
+            completed = 0
+            for e in self.edges:
+                if e.marked:
+                    completed += 1
+            return float(completed)/float(len(self.edges))
+               
+
     def update(self):
         for entity in self.entities:
             entity.update()
@@ -409,7 +418,8 @@ class Entity(object):
 class Player(Entity):
     entityType = 0
     visitedMarked = 0.0
-    visitedNonMarked = 0.0    
+    visitedNonMarked = 0.0
+    world = None
     def __init__(self, currentNode = None):
         Entity.__init__(self, currentNode)
         self.speed = 2
@@ -427,14 +437,17 @@ class Player(Entity):
             self.visitedNonMarked += 1.0
             markedNodes = edge.setMarked(True)
             if len(markedNodes) > 0:
-                sound.soundManager.play(sound.soundManager.DRAW)
+                #sound.soundManager.play(sound.soundManager.DRAW)
+                sound.soundManager.sendCompletedEdge()
         else:
             self.visitedMarked += 1.0
         print self.frustration()
         
     def onStopMoving(self):
         if self.currentNode.type != Node.JOINT:
-            sound.soundManager.play(sound.soundManager.MOVE)
+            #sound.soundManager.play(sound.soundManager.MOVE)
+            sound.soundManager.sendCompletedEdge()
+            sound.soundManager.sendCompletionRatio(self.world.completionRatio())
 
     def onMoving(self, oldPos, newPos):
         if not self.currentEdge.marked:
