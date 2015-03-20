@@ -1,4 +1,4 @@
-#N canvas 206 23 1094 797 10;
+#N canvas 203 37 1094 797 10;
 #N canvas 57 23 1274 670 samples 0;
 #N canvas 0 22 450 278 (subpatch) 0;
 #X array deep 43312 float 3;
@@ -21134,7 +21134,7 @@
 #X obj 315 591 outlet current;
 #X obj 152 64 inlet tempo;
 #X msg 186 157 50;
-#X obj 58 268 tgl 15 0 empty metro empty 17 7 0 10 -262144 -1 -1 1
+#X obj 58 268 tgl 15 0 empty metro empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 109 473 s tick;
 #X connect 0 0 1 0;
@@ -21960,7 +21960,7 @@
 #X restore 365 613 pd wide;
 #X obj 542 179 loadbang;
 #X msg 542 201 0;
-#N canvas 0 273 828 487 delay 1;
+#N canvas 0 273 828 487 delay 0;
 #X obj 201 20 inlet~;
 #X obj 199 415 outlet~;
 #X obj 367 418 outlet~;
@@ -22159,7 +22159,7 @@
 #X obj 514 519 *~ 0.5;
 #X obj 916 131 r wet;
 #X obj 917 157 > 0;
-#X obj 111 2 tgl 50 0 metro empty empty 17 7 0 10 -1 -4032 -1 1 1;
+#X obj 111 2 tgl 50 0 metro empty empty 17 7 0 10 -1 -4032 -1 0 1;
 #X text 163 4 turn main metro on/off;
 #X obj 52 686 catch~ samptest;
 #X obj 374 483 *~ 1;
@@ -22176,6 +22176,18 @@ different voice sample (recognise it?!) -Changed the "chord" synth
 -Removed the middle note from the chord -added "hum" for thicker texture
 \, but needs refining -added some switches to isolate sounds -added
 some quick sample playback for testing;
+#X obj 832 34 r death;
+#X obj 893 34 r win;
+#X obj 974 39 r win;
+#X obj 603 37 r frustration;
+#X obj 717 36 r planning;
+#X obj 552 37 r fear;
+#X obj 530 64 print fear;
+#X obj 603 63 print frustration;
+#X obj 716 60 print planning;
+#X obj 824 58 print death;
+#X obj 896 64 print win;
+#X obj 978 62 print win;
 #X connect 1 0 21 0;
 #X connect 1 1 45 1;
 #X connect 2 0 13 1;
@@ -22268,3 +22280,9 @@ some quick sample playback for testing;
 #X connect 62 0 61 1;
 #X connect 64 0 14 0;
 #X connect 65 0 14 1;
+#X connect 70 0 79 0;
+#X connect 71 0 80 0;
+#X connect 72 0 81 0;
+#X connect 73 0 77 0;
+#X connect 74 0 78 0;
+#X connect 75 0 76 0;

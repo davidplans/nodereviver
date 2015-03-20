@@ -39,66 +39,91 @@ class _SoundManager:
         self.sounds = []
         self._initialized = False
         self.enabled = True
+        self._pdManager = None
+        self._ch = None
+        self._inbuf = None
+        self._sounds = None
+        self._samples = None
+        self._patch = None
+        self._BUFFERSIZE = 1024
+        self._BLOCKSIZE = 64
+        self._SAMPLERATE = 44100
+        self._selector = 0
 
     def init(self, config):
         if self._initialized:
             return
         self._initialized = True
         self._config = config
-        if self._config.sound:
-            pygame.mixer.pre_init(44100, -16, 2, 256)
-
-    def loadSounds(self):
-        if self._config.sound:
-            #pygame.mixer.init()
-            for fileName in self.FILES:
-                self.sounds.append(pygame.mixer.Sound(self._config.dataPath + fileName))
-
-    def startEngine(self):
-        # this is basically a dummy since we are not actually going to read from the mic
-        inbuf = array.array('h', range(BLOCKSIZE))
-        #pygame.mixer.init(frequency=SAMPLERATE)
-        m = PdManager(1, 2, SAMPLERATE, 1)
+        pygame.mixer.pre_init(44100, -16, 2, 256)
+        pygame.init()
+        self._pdManager = PdManager(1,2,self._SAMPLERATE, 1)
         libpd_add_to_search_path('engine/')
-        patch = libpd_open_patch('engine/futureuser_EVA.pd', '.')
-        print "$0: ", patch
-        # the pygame channel that we will use to queue up buffers coming from pd
-        ch = pygame.mixer.Channel(0)
-        # python writeable sound buffers
-        sounds = [pygame.mixer.Sound(numpy.zeros((BUFFERSIZE, 2), numpy.int16)) for s in range(2)]
-        samples = [pygame.sndarray.samples(s) for s in sounds]
-        # we go into an infinite loop selecting alternate buffers and queueing them up
-        # to be played each time we run short of a buffer
-        selector = 0
-        while(1):
-            # we have run out of things to play, so queue up another buffer of data from Pd
-            if not ch.get_queue():
-                # make sure we fill the whole buffer
-                for x in range(BUFFERSIZE):
-                    # let's grab a new block from Pd each time we're out of BLOCKSIZE data
-                    if x % BLOCKSIZE == 0:
-                        outbuf = m.process(inbuf)
-                    # de-interlace the data coming from libpd
-                    samples[selector][x][0] = outbuf[(x % BLOCKSIZE) * 2]
-                    samples[selector][x][1] = outbuf[(x % BLOCKSIZE) * 2 + 1]
-                # queue up the buffer we just filled to be played by pygame
-                ch.queue(sounds[selector])
-                # next time we'll do the other buffer
-                selector = int(not selector)
+        self._patch = libpd_open_patch('engine/futureuser_EVA.pd', '.')
+        print "$0: ", self._patch
 
-        libpd_release()
+        # this is basically a dummy since we are not actually going to read from the mic
+        self._inbuf = array.array('h', range(self._BLOCKSIZE))
+
+        # the pygame channel that we will use to queue up buffers coming from pd
+        self._ch = pygame.mixer.Channel(0)
+        # python writeable sound buffers
+        self._sounds = [pygame.mixer.Sound(numpy.zeros((self._BUFFERSIZE, 2), numpy.int16)) for s in range(2)]
+        self._samples = [pygame.sndarray.samples(s) for s in self._sounds]
+
+        
+    #def loadSounds(self):
+    #    if self._config.sound:
+    #        #pygame.mixer.init()
+    #        for fileName in self.FILES:
+    #            self.sounds.append(pygame.mixer.Sound(self._config.dataPath + fileName))
+
 
     def release(self):
+        libpd_release()
         if self._initialized and self._config.sound:
             pygame.mixer.quit()
 
     def play(self, soundIndex):
-        if not self.enabled or not self._initialized or not self._config.sound:
-            return
-        self.sounds[soundIndex].play()
+        libpd_float('sound', soundIndex)
+        #if not self.enabled or not self._initialized or not self._config.sound:
+        #    return
+        #self.sounds[soundIndex].play()
 
-    def enable(self, enabled = True):
-        self.enabled = enabled
+    #def enable(self, enabled = True):
+    #    self.enabled = enabled
+        
+    def processAudio(self):
+        if not self._ch.get_queue():
+            # make sure we fill the whole buffer
+            for x in range(self._BUFFERSIZE):
+                # let's grab a new block from Pd each time we're out of BLOCKSIZE data
+                if x % self._BLOCKSIZE == 0:
+                    outbuf = self._pdManager.process(self._inbuf)
+                # de-interlace the data coming from libpd
+                self._samples[self._selector][x][0] = outbuf[(x % self._BLOCKSIZE) * 2]
+                self._samples[self._selector][x][1] = outbuf[(x % self._BLOCKSIZE) * 2 + 1]
+            # queue up the buffer we just filled to be played by pygame
+            self._ch.queue(self._sounds[self._selector])
+            # next time we'll do the other buffer
+            self._selector = int(not self._selector)
 
+    def sendFrustration(self, frustration):
+        libpd_float('frustration', frustration)
 
+    def sendPlanning(self, planning):
+        libpd_float('planning', planning)
+
+    def sendFear(self, fear):
+        libpd_float('fear', fear)
+
+    def sendDeath(self):
+        libpd_bang('death')
+
+    def sendVictory(self):
+        libpd_bang('victory')
+
+    def sendMove(self):
+        libpd_bang('move')
+        
 soundManager = _SoundManager()
