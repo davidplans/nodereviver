@@ -28,56 +28,16 @@ debug = False
 _spriteSurface = None
 _gameState = None
 
-_storyText = ["Oh noes ! Our super-expensive equipment     ",
-"has been hacked !",
-"  ",
-"All internal nodes have been disconnected",
-"and security drones have been reprogrammed against us !",
-"         ",
-"We hired you for your particular talent",
-"with dealing with this kind of situation.",
-"         ",
-"So your mission is...            ",
-"to reconnect all nodes of our appliances...",
-"         ",
-"I mean valuable equipment",
-"            ",
-"Which we need to get some work done in here...",
-"   ",
-"Good luck and beware of the drones !",
-"                                               ",
-"And if you die we'll replace you...              ",
-"I mean... you can try again.  ",
-""]
+_storyText = ["This game's music is made in real-time",
+    "We look at how you play and generate music,",
+    "...that hopefully helps you along!",
+    ""]
 
-_endGameText = ["Congratulations !!!",
-"You have reactivated all of our company's equipment",
-"which means we can resume work now...",
-"By the way, our bank account has been hacked as well",
-"beyond repair... so you'll have to wait",
-"for a while until you get your check...",
-"    ",
-"    ",
-"    ",
-"Cup of coffee ? How many sugars ?"
-"    ",
-"    ",
-"    ",
-"You finished the game in %time%.",
-"     ",
-"                                           ",
-"Thank you for playing Node Reviver (MiniLD #33)",
-""]
+_endGameText = ["Congratulations!",
+    "You finished the game in %time%.",
+    ""]
 
-_cheatEndGameText = ["Well, it seems you haven't fixed everything...",
-"Please start again, this time from the very beginning !",
-"     ",
-"Clever you, using command line arguments !!!",
-"     ",
-"                       ",
-"But I like your attitude !",
-"     ",
-"Thank you for playing Node Reviver (MiniLD #33)",
+_cheatEndGameText = ["Thanks for playing!",
 ""]
 _sprites = [
     # 0 Player
