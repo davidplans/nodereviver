@@ -27,10 +27,11 @@ from config import Config
 from WorldLoaderJson import WorldLoader
 from model import GameState
 
+fear = 0.0
+
 class Game:
     titleDemo = [3,0,0,3,0,1,2,1,1,3,0,2,0,3,1,2,1,3,0,2,0,3,1,2,1,3,0,2,0,0,3,2,1,3,2,1,3,3,2,1,3,1,2,2,2,2,2,2,2,1,2,1,1,0,3,1,2,3,0,2,0,3,1,2,1,1,3,2,0,3,2,0,3,3,2,0,3,1,1,3,3,3,0,0,1,2,2,0,0,0,3,1,1,2,3,3,2,0,2,3,3,2,0,3,1,1,3,3,0,0,1,2,2,0,0,0,3,1,3,2,2,1,3,2,1,3,2,0,0,3,0,3,1,2,1,1,0,0,3,3,1,2,2,3,1,1,2]
 
-    
     def __init__(self, config):
         self._config = config
         if self._config.dataPath[-1] != '/':
@@ -52,7 +53,7 @@ class Game:
         sound.soundManager.init(self._config)
         
         self._initDisplay()
-        pygame.display.set_caption('Node Reviver - by Vincent Petry (MiniLD#33)')
+        pygame.display.set_caption('Node Sound by Elise and David Plans and Davide Morelli')
         pygame.mouse.set_visible(False)
         self._screen = pygame.display.get_surface()
         self._clock = pygame.time.Clock()
@@ -237,6 +238,11 @@ class Game:
             sound.soundManager.sendFrustration(frustration)
             if nFoes > 0:
                 averageDist = float(sumDist) / float(nFoes)
+
+            # TODO davide there must be a better way to pass the fear variable around
+            # than to use evil global variable? Perhaps we should use config.py to store
+            # all the variables like fear, frustration, etc?
+            global fear
             fear = 1.0/averageDist
             sound.soundManager.sendFear(fear)
             pygame.display.set_caption('planning={0} fear={1} frustration={2}'.format(str(planning),str(fear),str(frustration)))

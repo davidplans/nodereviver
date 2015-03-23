@@ -16,6 +16,7 @@
 
     @author: Vincent Petry <PVince81@yahoo.fr>
 '''
+
 import pygame
 from pylibpd import *
 import numpy
@@ -34,6 +35,9 @@ class _SoundManager:
         "dead.wav",
         "draw.wav"
     ]
+
+    # TODO davide I think we need a level event that we can use
+    # to change patch and understand level finish and new level
 
     def __init__(self):
         self.sounds = []
@@ -125,5 +129,6 @@ class _SoundManager:
 
     def sendMove(self):
         libpd_bang('move')
-        
+
+
 soundManager = _SoundManager()

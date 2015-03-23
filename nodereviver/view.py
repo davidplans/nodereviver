@@ -17,11 +17,13 @@
     @author: Vincent Petry <PVince81@yahoo.fr>
 '''
 import pygame
+import game
 import model
 import random
 import math
 from util import *
 from model import GameState
+from pylibpd import *
 
 debug = False
 
@@ -29,56 +31,56 @@ _spriteSurface = None
 _gameState = None
 
 _storyText = ["Oh noes ! Our super-expensive equipment     ",
-"has been hacked !",
-"  ",
-"All internal nodes have been disconnected",
-"and security drones have been reprogrammed against us !",
-"         ",
-"We hired you for your particular talent",
-"with dealing with this kind of situation.",
-"         ",
-"So your mission is...            ",
-"to reconnect all nodes of our appliances...",
-"         ",
-"I mean valuable equipment",
-"            ",
-"Which we need to get some work done in here...",
-"   ",
-"Good luck and beware of the drones !",
-"                                               ",
-"And if you die we'll replace you...              ",
-"I mean... you can try again.  ",
-""]
+              "has been hacked !",
+              "  ",
+              "All internal nodes have been disconnected",
+              "and security drones have been reprogrammed against us !",
+              "         ",
+              "We hired you for your particular talent",
+              "with dealing with this kind of situation.",
+              "         ",
+              "So your mission is...            ",
+              "to reconnect all nodes of our appliances...",
+              "         ",
+              "I mean valuable equipment",
+              "            ",
+              "Which we need to get some work done in here...",
+              "   ",
+              "Good luck and beware of the drones !",
+              "                                               ",
+              "And if you die we'll replace you...              ",
+              "I mean... you can try again.  ",
+              ""]
 
 _endGameText = ["Congratulations !!!",
-"You have reactivated all of our company's equipment",
-"which means we can resume work now...",
-"By the way, our bank account has been hacked as well",
-"beyond repair... so you'll have to wait",
-"for a while until you get your check...",
-"    ",
-"    ",
-"    ",
-"Cup of coffee ? How many sugars ?"
-"    ",
-"    ",
-"    ",
-"You finished the game in %time%.",
-"     ",
-"                                           ",
-"Thank you for playing Node Reviver (MiniLD #33)",
-""]
+                "You have reactivated all of our company's equipment",
+                "which means we can resume work now...",
+                "By the way, our bank account has been hacked as well",
+                "beyond repair... so you'll have to wait",
+                "for a while until you get your check...",
+                "    ",
+                "    ",
+                "    ",
+                "Cup of coffee ? How many sugars ?"
+                "    ",
+                "    ",
+                "    ",
+                "You finished the game in %time%.",
+                "     ",
+                "                                           ",
+                "Thank you for playing Node Reviver (MiniLD #33)",
+                ""]
 
 _cheatEndGameText = ["Well, it seems you haven't fixed everything...",
-"Please start again, this time from the very beginning !",
-"     ",
-"Clever you, using command line arguments !!!",
-"     ",
-"                       ",
-"But I like your attitude !",
-"     ",
-"Thank you for playing Node Reviver (MiniLD #33)",
-""]
+                     "Please start again, this time from the very beginning !",
+                     "     ",
+                     "Clever you, using command line arguments !!!",
+                     "     ",
+                     "                       ",
+                     "But I like your attitude !",
+                     "     ",
+                     "Thank you for playing Node Reviver (MiniLD #33)",
+                     ""]
 _sprites = [
     # 0 Player
     pygame.Rect(0, 0, 20, 20),
@@ -122,11 +124,19 @@ SPRITE_ARROW_RIGHT_ACTIVE = 10
 SPRITE_NODE_NORMAL = 11
 SPRITE_NODE_ACTIVE = 12
 
-def drawSprite(surface, spriteIndex, pos, alpha = 255):
-    _spriteSurface.set_alpha(alpha)
-    surface.blit(_spriteSurface, pos, _sprites[spriteIndex] )
+def sendNodeLuminance(self, nodeLum):
+    libpd_float('nodeLum')
+    # TODO davide how should we send luminance level? libpd_message or float?
+    # I think message, see line 627
+    libpd_message(nodeLum)
 
-def makeTextSurfaces(text, font, color = (255, 255, 255)):
+
+def drawSprite(surface, spriteIndex, pos, alpha=255):
+    _spriteSurface.set_alpha(alpha)
+    surface.blit(_spriteSurface, pos, _sprites[spriteIndex])
+
+
+def makeTextSurfaces(text, font, color=(255, 255, 255)):
     if not text:
         return []
     surfaces = []
@@ -135,10 +145,11 @@ def makeTextSurfaces(text, font, color = (255, 255, 255)):
     else:
         rows = text.split("\\n")
     for row in rows:
-        surfaces.append( font.render(row, False, color) )
+        surfaces.append(font.render(row, False, color))
     return surfaces
 
-def blitTextSurfaces(targetSurface, surfaces, fontHeight, globalOffset = (0, 0), centerInViewport = None):
+
+def blitTextSurfaces(targetSurface, surfaces, fontHeight, globalOffset=(0, 0), centerInViewport=None):
     offsetY = globalOffset[1]
     if centerInViewport:
         for surface in surfaces:
@@ -154,7 +165,8 @@ def blitTextSurfaces(targetSurface, surfaces, fontHeight, globalOffset = (0, 0),
 
     return offsetY
 
-def drawLine(surface, color, src, dest, width = 1):
+
+def drawLine(surface, color, src, dest, width=1):
     if src[0] > dest[0] or src[1] > dest[1]:
         aux = src
         src = dest
@@ -163,6 +175,7 @@ def drawLine(surface, color, src, dest, width = 1):
     pos1 = vectorAdd(src, (-width, -width))
     pos2 = vectorAdd(dest, (width, width))
     pygame.draw.rect(surface, color, (pos1[0], pos1[1], pos2[0] - pos1[0], pos2[1] - pos1[1]))
+
 
 class ViewContext(object):
     def __init__(self, config, screen, gameState):
@@ -184,6 +197,7 @@ class ViewContext(object):
         self.bigFont = pygame.font.Font(config.dataPath + fontFile, 18)
         self.biggerFont = pygame.font.Font(config.dataPath + fontFile, 20)
         self._particlesViews = []
+
 
 class Display(object):
     def __init__(self, config, screen, gameState):
@@ -210,7 +224,7 @@ class Display(object):
         global _gameState
         _gameState = gameState
         _spriteSurface = pygame.image.load(config.dataPath + "sprites.png")
-        #_spriteSurface = _spriteSurface.convert_alpha(screen)
+        # _spriteSurface = _spriteSurface.convert_alpha(screen)
         _spriteSurface = _spriteSurface.convert(screen)
         _spriteSurface.set_colorkey((255, 0, 255), pygame.RLEACCEL)
 
@@ -228,9 +242,11 @@ class Display(object):
         self._player = player
         self.context._particlesViews = []
         self._worldView = WorldView(self.context, world)
-        playerParticles = ParticlesView(self._player, int(self.context.config.particlesRatio * 40), int(1.0/ self.context.config.particlesRatio))
+        # TODO possibly interesting variable: particlesRatio to map to flow
+        playerParticles = ParticlesView(self._player, int(self.context.config.particlesRatio * 40),
+                                        int(1.0 / self.context.config.particlesRatio))
         self.addEntityView(playerParticles)
-        self.addEntityView( PlayerView(self._player, playerParticles) )
+        self.addEntityView(PlayerView(self._player, playerParticles))
         for entity in world.entities:
             # entities are all foes for now (except player)
             self.addEntityView(FoeView(entity))
@@ -266,16 +282,16 @@ class Display(object):
     def render(self):
         surface = self.context.screen
         if _gameState.state == GameState.QUIT:
-            surface.blit(self._background, (0,0))
+            surface.blit(self._background, (0, 0))
             textSurface = self.context.bigFont.render("Caught signal SIGKILL...", False, (0, 192, 0))
             surface.blit(textSurface, (10, 10))
             return
         elif _gameState.state == GameState.STORY:
-            surface.blit(self._background, (0,0))
+            surface.blit(self._background, (0, 0))
             self._story.render(surface)
             return
         elif _gameState.state == GameState.ENDGAME:
-            surface.blit(self._background, (0,0))
+            surface.blit(self._background, (0, 0))
             self._endStory.render(surface)
             return
         self.renderUI()
@@ -325,6 +341,7 @@ class Display(object):
     def clear(self):
         self._entities = []
 
+
 class WorldView(object):
     '''
     '''
@@ -345,14 +362,18 @@ class WorldView(object):
         # render edges
         for edge in self._world.edges:
             width = 3
+
+            # EVA here we split the luminance bands from grey to bright cyan
+            # following hubbard
+
             if edge.isMarked():
-                color = (0, 255, 255)
+                color = (0, 255, 255)  # white
             else:
                 color = (128, 128, 128)
 
             # HACK: pygame.draw.line doesn't apply the width around the position,
             # so need to shift it manually
-            drawLine(surface, color, edge.source.pos, edge.destination.pos, width )
+            drawLine(surface, color, edge.source.pos, edge.destination.pos, width)
             if edge.oneWay and edge.destination.type != model.Node.JOINT:
                 # Draw arrow
                 dir = unitVector(vectorDiff(edge.destination.pos, edge.source.pos))
@@ -421,6 +442,7 @@ class WorldView(object):
             self._rerender()
         self._context.screen.blit(self._worldSurface, (0, 0))
 
+
 class EdgeView(object):
     def __init__(self, edge, context):
         self.edge = edge
@@ -435,14 +457,32 @@ class EdgeView(object):
             if self.nodeStates:
                 for states in self.nodeStates:
                     if states[0].marked and states[1] != states[0].marked:
+                        # TODO davide: I cannot make this work somehow...it doesn't change particle color according to fear level
+                        nodeParticlesColor = (255, 255, 255)
+                        if not game.fear < 0.91:
+                            nodeParticlesColor = (153, 255, 255)  # ligth cyan
+                            self._context.config.particlesRatio * 100
+                        elif not game.fear < 0.6 and not game.fear > 0.8:
+                            nodeParticlesColor = (204, 255, 255)  # very light cyan
+                            self._context.config.particlesRatio * 70
+                        elif not game.fear < 0.4 and not game.fear > 0.59:
+                            nodeParticlesColor = (255, 255, 255)  # white
+                            self._context.config.particlesRatio * 50
+                        elif not game.fear < 0.2 and not game.fear > 0.39:
+                            nodeParticlesColor = (224, 224, 224)  # light gray
+                            self._context.config.particlesRatio * 30
+                        elif not game.fear < 0.0 and not game.fear > 0.19:
+                            nodeParticlesColor = (192, 192, 192)  # white
+                            self._context.config.particlesRatio * 10
+
                         particlesCount = self._context.config.particlesRatio * 10
                         particleView = ParticlesView(states[0], particlesCount)
-                        particleView.makeParticles((255, 255, 0), particlesCount)
+                        particleView.makeParticles(nodeParticlesColor, particlesCount)
                         self._context._particlesViews.append(particleView)
 
             if self.edge:
                 self.nodes = [node for node in [edge.source, edge.destination] if node.type != model.Node.JOINT]
-                self.nodeStates = [(node,node.marked) for node in self.nodes]
+                self.nodeStates = [(node, node.marked) for node in self.nodes]
                 self.posSource = vectorAdd(edge.source.pos, (-1, -1))
                 self.posDest = vectorAdd(edge.destination.pos, (-1, -1))
             else:
@@ -459,11 +499,11 @@ class EdgeView(object):
         # from 192 to 0
         colorValue1 = 128 * int(1.0 - ratio)
         # from 192 to 255
-        colorValue2 = 128 + int((255-128) * ratio)
+        colorValue2 = 128 + int((255 - 128) * ratio)
         color = (colorValue1, colorValue2, colorValue2)
         width = 4
 
-        pygame.draw.line(screen, color, self.posSource, self.posDest, width )
+        pygame.draw.line(screen, color, self.posSource, self.posDest, width)
 
         d = 5
         for node in self.nodes:
@@ -474,6 +514,7 @@ class EdgeView(object):
                     spriteIndex = SPRITE_NODE_NORMAL
                 pos = (node.pos[0] - d, node.pos[1] - d)
                 drawSprite(screen, spriteIndex, pos)
+
 
 class Story(object):
     rowDelay = 10
@@ -517,11 +558,14 @@ class Story(object):
         offsetY = blitTextSurfaces(screen, self._textSurfaces, fontHeight, (10, 10))
         # cursor
         if self._textSurfaces[-1]:
-            pygame.draw.rect(screen, (0, 255, 0), (10 + self._textSurfaces[-1].get_width(), offsetY - fontHeight, fontHeight / 2 - 2, fontHeight - 2))
-            screen.blit(self._pressEnterSurface, (screen.get_width() / 2 - self._pressEnterSurface.get_width() / 2, screen.get_height() - fontHeight * 2))
+            pygame.draw.rect(screen, (0, 255, 0), (
+                10 + self._textSurfaces[-1].get_width(), offsetY - fontHeight, fontHeight / 2 - 2, fontHeight - 2))
+            screen.blit(self._pressEnterSurface, (
+                screen.get_width() / 2 - self._pressEnterSurface.get_width() / 2, screen.get_height() - fontHeight * 2))
+
 
 class Particle(object):
-    def __init__(self, pos = (0,0)):
+    def __init__(self, pos=(0, 0)):
         self.pos = pos
         self.visible = False
         self.movement = (0, 0)
@@ -547,9 +591,10 @@ class Particle(object):
         pygame.draw.rect(screen, self.currentColor, rect)
 
     def reset(self):
-        self.lifeTime = 60 # one second
+        self.lifeTime = 60  # one second
         self.size = 3
         self.visible = True
+
 
 class EntityView(object):
     def __init__(self, entity):
@@ -561,7 +606,9 @@ class EntityView(object):
     def render(self, surface):
         pass
 
+
 class PlayerView(EntityView):
+
     def __init__(self, entity, particlesView):
         EntityView.__init__(self, entity)
         self.particlesView = particlesView
@@ -569,10 +616,29 @@ class PlayerView(EntityView):
     def update(self):
         if self._entity.currentEdge and not self._entity.currentEdge.marked:
             # Marking in progress
-            self.particlesView.makeParticles((0, 255, 255))
+            # this is where we mark colour of particles as we travel node to node
+
+            # map hubbard luminance
+
+            # TODO davide: I cannot make this work somehow...it doesn't change particle color according to fear level
+            nodeParticlesColor = (255, 255, 255)
+            if not game.fear < 0.91:
+                nodeParticlesColor = (153, 255, 255)  # ligth cyan
+                #TODO davide theres five levels of luminance breakdown as seen below
+                # so, veryHigh, high, medium, low, very low
+                # sendNodeLuminance()
+            elif not game.fear < 0.6 and not game.fear > 0.8:
+                nodeParticlesColor = (204, 255, 255)  # very light cyan
+            elif not game.fear < 0.4 and not game.fear > 0.59:
+                nodeParticlesColor = (255, 255, 255)  # white
+            elif not game.fear < 0.2 and not game.fear > 0.39:
+                nodeParticlesColor = (224, 224, 224)  # light gray
+            elif not game.fear < 0.0 and not game.fear > 0.19:
+                nodeParticlesColor = (192, 192, 192)  # white
+            self.particlesView.makeParticles(nodeParticlesColor)
 
     def render(self, surface):
-        offset = (-10,-10)
+        offset = (-10, -10)
         alpha = 255
         if _gameState.state == GameState.LEVEL_START:
             alpha = int(_gameState.getProgress() * 255)
@@ -584,6 +650,7 @@ class PlayerView(EntityView):
 
         pos = vectorAdd(self._entity.pos, offset)
         drawSprite(surface, SPRITE_PLAYER, pos, alpha)
+
 
 class FoeView(EntityView):
     def __init__(self, entity):
@@ -597,8 +664,9 @@ class FoeView(EntityView):
         pos = vectorAdd(self._entity.pos, (-10, -10))
         drawSprite(surface, sprite, pos)
 
+
 class ParticlesView(EntityView):
-    def __init__(self, entity, amount, frequency = 0):
+    def __init__(self, entity, amount, frequency=0):
         EntityView.__init__(self, entity)
         self._frequency = frequency
         self._freqCounter = frequency
@@ -609,7 +677,7 @@ class ParticlesView(EntityView):
             particle.visible = False
             self._particles.append(particle)
 
-    def makeParticles(self, color, amount = 1):
+    def makeParticles(self, color, amount=1):
         if self._freqCounter > 0:
             self._freqCounter -= 1
             return
@@ -650,6 +718,7 @@ class ParticlesView(EntityView):
     def isActive(self):
         return self._activeParticles > 0
 
+
 class SelectionView():
     def __init__(self):
         self._nodes = []
@@ -662,6 +731,7 @@ class SelectionView():
         self._edge = edge
 
     def render(self, screen):
+        # this is the line colour
         color = (255, 255, 0)
         for selectedNode in self._nodes:
             if selectedNode.type == model.Node.JOINT:
@@ -669,10 +739,11 @@ class SelectionView():
             else:
                 d = 8
             rect = (selectedNode.pos[0] - d, selectedNode.pos[1] - d, d * 2, d * 2)
-            pygame.draw.rect(screen, color, rect )
+            pygame.draw.rect(screen, color, rect)
 
         if self._edge:
-            pygame.draw.line(screen, color, self._edge.source.pos, self._edge.destination.pos, 1 )
+            pygame.draw.line(screen, color, self._edge.source.pos, self._edge.destination.pos, 1)
+
 
 class Hud(object):
     '''
@@ -693,7 +764,7 @@ class Hud(object):
         self._subtitleSurfaces = []
         self._endtextSurfaces = []
 
-    def setTitle(self, title = None, subtitle = None, endtext = None):
+    def setTitle(self, title=None, subtitle=None, endtext=None):
         self._title = title
         self._subtitle = subtitle
         self._endtext = endtext
@@ -724,19 +795,23 @@ class Hud(object):
         if self._gameState.state == GameState.TITLE:
             return
 
-        offsetY = blitTextSurfaces(self._context.screen, self._titleSurfaces, self._font.get_height(), (0, 10), self._context.boardSize)
+        offsetY = blitTextSurfaces(self._context.screen, self._titleSurfaces, self._font.get_height(), (0, 10),
+                                   self._context.boardSize)
 
         if self._gameState.state == GameState.LEVEL_END and self._endtext:
             offsetY = self._context.boardSize[1] - self._font2.get_height() * len(self._endtextSurfaces) - 10
-            blitTextSurfaces(self._context.screen, self._endtextSurfaces, self._font2.get_height(), (0, offsetY), self._context.boardSize)
+            blitTextSurfaces(self._context.screen, self._endtextSurfaces, self._font2.get_height(), (0, offsetY),
+                             self._context.boardSize)
         else:
             offsetY = self._context.boardSize[1] - self._font2.get_height() * len(self._subtitleSurfaces) - 10
-            blitTextSurfaces(self._context.screen, self._subtitleSurfaces, self._font2.get_height(), (0, offsetY), self._context.boardSize)
+            blitTextSurfaces(self._context.screen, self._subtitleSurfaces, self._font2.get_height(), (0, offsetY),
+                             self._context.boardSize)
 
-        #if self._lastScore != self._gameState.score:
-        #    self._lastScore = self._gameState.score
-        #    self._scoreSurface = self._font.render("%i" % self._lastScore, False, (0, 192, 0))
-        #self._screen.blit(self._scoreSurface, (0, self._screen.get_height() - self._font.get_height()))
+            # if self._lastScore != self._gameState.score:
+            #    self._lastScore = self._gameState.score
+            #    self._scoreSurface = self._font.render("%i" % self._lastScore, False, (0, 192, 0))
+            #self._screen.blit(self._scoreSurface, (0, self._screen.get_height() - self._font.get_height()))
+
 
 class TitleScreen(object):
     def __init__(self, context):
@@ -745,7 +820,8 @@ class TitleScreen(object):
         self._font2 = context.normalFont
         fontHeight = self._font.get_height()
         self._textSurface = self._font.render("Press ENTER to start playing", False, (0, 192, 0))
-        self._text2Surface = self._font2.render("Copyright \xa9 2012 Vincent Petry (for MiniLD #33)", False, (0, 192, 0))
+        self._text2Surface = self._font2.render("Copyleft \xa9 2015 david and elise plans and davide morelli", False,
+                                                (0, 192, 0))
         rect = self._textSurface.get_rect()
         screenRect = context.screen.get_rect()
         self._pos = (context.boardSize[0] / 2 - rect[2] / 2, 195)
@@ -755,3 +831,4 @@ class TitleScreen(object):
     def render(self):
         self._screen.blit(self._textSurface, self._pos)
         self._screen.blit(self._text2Surface, self._pos2)
+
