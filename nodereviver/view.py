@@ -18,6 +18,7 @@
 '''
 import pygame
 import game
+import sound
 import model
 import random
 import math
@@ -123,12 +124,6 @@ SPRITE_ARROW_LEFT_ACTIVE = 9
 SPRITE_ARROW_RIGHT_ACTIVE = 10
 SPRITE_NODE_NORMAL = 11
 SPRITE_NODE_ACTIVE = 12
-
-def sendNodeLuminance(self, nodeLum):
-    libpd_float('nodeLum')
-    # TODO davide how should we send luminance level? libpd_message or float?
-    # I think message, see line 627
-    libpd_message(nodeLum)
 
 
 def drawSprite(surface, spriteIndex, pos, alpha=255):
@@ -363,9 +358,6 @@ class WorldView(object):
         for edge in self._world.edges:
             width = 3
 
-            # EVA here we split the luminance bands from grey to bright cyan
-            # following hubbard
-
             if edge.isMarked():
                 color = (0, 255, 255)  # white
             else:
@@ -458,26 +450,26 @@ class EdgeView(object):
                 for states in self.nodeStates:
                     if states[0].marked and states[1] != states[0].marked:
                         # TODO davide: I cannot make this work somehow...it doesn't change particle color according to fear level
-                        nodeParticlesColor = (255, 255, 255)
+                        self.nodeParticlesColor = (255, 255, 255)
                         if not game.fear < 0.91:
-                            nodeParticlesColor = (153, 255, 255)  # ligth cyan
+                            self.nodeParticlesColor = (153, 255, 255)  # ligth cyan
                             self._context.config.particlesRatio * 100
                         elif not game.fear < 0.6 and not game.fear > 0.8:
-                            nodeParticlesColor = (204, 255, 255)  # very light cyan
+                            self.nodeParticlesColor = (204, 255, 255)  # very light cyan
                             self._context.config.particlesRatio * 70
                         elif not game.fear < 0.4 and not game.fear > 0.59:
-                            nodeParticlesColor = (255, 255, 255)  # white
+                            self.nodeParticlesColor = (255, 255, 255)  # white
                             self._context.config.particlesRatio * 50
                         elif not game.fear < 0.2 and not game.fear > 0.39:
-                            nodeParticlesColor = (224, 224, 224)  # light gray
+                            self.nodeParticlesColor = (224, 224, 224)  # light gray
                             self._context.config.particlesRatio * 30
                         elif not game.fear < 0.0 and not game.fear > 0.19:
-                            nodeParticlesColor = (192, 192, 192)  # white
+                            self.nodeParticlesColor = (192, 192, 192)  # white
                             self._context.config.particlesRatio * 10
 
                         particlesCount = self._context.config.particlesRatio * 10
                         particleView = ParticlesView(states[0], particlesCount)
-                        particleView.makeParticles(nodeParticlesColor, particlesCount)
+                        particleView.makeParticles(self.nodeParticlesColor, particlesCount)
                         self._context._particlesViews.append(particleView)
 
             if self.edge:
@@ -621,21 +613,36 @@ class PlayerView(EntityView):
             # map hubbard luminance
 
             # TODO davide: I cannot make this work somehow...it doesn't change particle color according to fear level
-            nodeParticlesColor = (255, 255, 255)
+            self.nodeParticlesColor = (255, 255, 255)
+            self.nodeLum = 'medium'
             if not game.fear < 0.91:
-                nodeParticlesColor = (153, 255, 255)  # ligth cyan
-                #TODO davide theres five levels of luminance breakdown as seen below
-                # so, veryHigh, high, medium, low, very low
-                # sendNodeLuminance()
+                self.nodeParticlesColor = (153, 255, 255)  # ligth cyan
+                #theres five levels of luminance breakdown as seen below
+                # veryHigh, high, medium, low, very low
+                self.nodeLum = 'veryHigh'
+                print 'lum = veryHigh'
+                sound.soundManager.sendNodeLuminance(self.nodeLum)
             elif not game.fear < 0.6 and not game.fear > 0.8:
-                nodeParticlesColor = (204, 255, 255)  # very light cyan
+                self.nodeParticlesColor = (204, 255, 255)  # very light cyan
+                self.nodeLum = 'high'
+                sound.soundManager.sendNodeLuminance(self.nodeLum)
+                print 'lum = High'
             elif not game.fear < 0.4 and not game.fear > 0.59:
-                nodeParticlesColor = (255, 255, 255)  # white
+                self.nodeParticlesColor = (255, 255, 255)  # white
+                self.nodeLum = 'medium'
+                sound.soundManager.sendNodeLuminance(self.nodeLum)
+                print 'lum = medium'
             elif not game.fear < 0.2 and not game.fear > 0.39:
-                nodeParticlesColor = (224, 224, 224)  # light gray
+                self.nodeParticlesColor = (224, 224, 224)  # light gray
+                self.nodeLum = 'low'
+                sound.soundManager.sendNodeLuminance(self.nodeLum)
+                print 'lum = low'
             elif not game.fear < 0.0 and not game.fear > 0.19:
-                nodeParticlesColor = (192, 192, 192)  # white
-            self.particlesView.makeParticles(nodeParticlesColor)
+                self.nodeParticlesColor = (192, 192, 192)  # grey
+                self.nodeLum = 'veryLow'
+                sound.soundManager.sendNodeLuminance(self.nodeLum)
+                print 'lum = very Low'
+            self.particlesView.makeParticles(self.nodeParticlesColor)
 
     def render(self, surface):
         offset = (-10, -10)

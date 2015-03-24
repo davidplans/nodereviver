@@ -130,5 +130,8 @@ class _SoundManager:
     def sendMove(self):
         libpd_bang('move')
 
+    def sendNodeLuminance(self, nodeLum):
+        libpd_message('move', nodeLum)
+
 
 soundManager = _SoundManager()
