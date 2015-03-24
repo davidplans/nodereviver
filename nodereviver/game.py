@@ -26,6 +26,8 @@ from util import *
 from config import Config
 from WorldLoaderJson import WorldLoader
 from model import GameState
+from mixpanel import Mixpanel
+import uuid
 
 fear = 0.0
 
@@ -51,7 +53,14 @@ class Game:
         
     def _init(self):
         sound.soundManager.init(self._config)
-        
+
+        # generate unique user id
+        self.user_id = str(uuid.uuid4())
+
+        # calling mixpanel
+        mp = Mixpanel('f3801f20197eb4843b66fd4a78d0f542')
+        mp.track(self.user_id, 'Player started game')
+
         self._initDisplay()
         pygame.display.set_caption('Node Sound by Elise and David Plans and Davide Morelli')
         pygame.mouse.set_visible(False)
@@ -66,6 +75,7 @@ class Game:
 
         #sound.soundManager.loadSounds()
         #sound.soundManager.startEngine()
+
 
     def _quit(self):
         #sound.soundManager.release()
