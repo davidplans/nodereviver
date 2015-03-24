@@ -18,6 +18,7 @@
 '''
 import pygame
 import game
+import config
 import sound
 import model
 import random
@@ -238,7 +239,18 @@ class Display(object):
         self.context._particlesViews = []
         self._worldView = WorldView(self.context, world)
         # TODO possibly interesting variable: particlesRatio to map to flow
-        playerParticles = ParticlesView(self._player, int(self.context.config.particlesRatio * 40),
+        # if not game.fear < 0.91:
+        #     self.context.config.particlesRatio * 10
+        # elif not game.fear < 0.6 and not game.fear > 0.8:
+        #     self.context.config.particlesRatio * 40
+        # elif not game.fear < 0.4 and not game.fear > 0.59:
+        #     self.context.config.particlesRatio * 80
+        # elif not game.fear < 0.2 and not game.fear > 0.39:
+        #     self.context.config.particlesRatio * 120
+        # elif not game.fear < 0.0 and not game.fear > 0.19:
+        #     self.context.config.particlesRatio * 150
+
+        playerParticles = ParticlesView(self._player, int(self.context.config.particlesRatio * 100),
                                         int(1.0 / self.context.config.particlesRatio))
         self.addEntityView(playerParticles)
         self.addEntityView(PlayerView(self._player, playerParticles))
@@ -615,33 +627,22 @@ class PlayerView(EntityView):
             # TODO davide: I cannot make this work somehow...it doesn't change particle color according to fear level
             self.nodeParticlesColor = (255, 255, 255)
             self.nodeLum = 'medium'
-            if not game.fear < 0.91:
-                self.nodeParticlesColor = (153, 255, 255)  # ligth cyan
-                #theres five levels of luminance breakdown as seen below
-                # veryHigh, high, medium, low, very low
-                self.nodeLum = 'veryHigh'
-                print 'lum = veryHigh'
-                sound.soundManager.sendNodeLuminance(self.nodeLum)
-            elif not game.fear < 0.6 and not game.fear > 0.8:
-                self.nodeParticlesColor = (204, 255, 255)  # very light cyan
-                self.nodeLum = 'high'
-                sound.soundManager.sendNodeLuminance(self.nodeLum)
-                print 'lum = High'
-            elif not game.fear < 0.4 and not game.fear > 0.59:
-                self.nodeParticlesColor = (255, 255, 255)  # white
-                self.nodeLum = 'medium'
-                sound.soundManager.sendNodeLuminance(self.nodeLum)
-                print 'lum = medium'
-            elif not game.fear < 0.2 and not game.fear > 0.39:
-                self.nodeParticlesColor = (224, 224, 224)  # light gray
-                self.nodeLum = 'low'
-                sound.soundManager.sendNodeLuminance(self.nodeLum)
-                print 'lum = low'
-            elif not game.fear < 0.0 and not game.fear > 0.19:
+            if not game.fear < 0.75:
                 self.nodeParticlesColor = (192, 192, 192)  # grey
                 self.nodeLum = 'veryLow'
                 sound.soundManager.sendNodeLuminance(self.nodeLum)
-                print 'lum = very Low'
+            elif not game.fear < 0.5 and not game.fear > 0.74:
+                self.nodeParticlesColor = (224, 224, 224)  # light gray
+                self.nodeLum = 'low'
+                sound.soundManager.sendNodeLuminance(self.nodeLum)
+            elif not game.fear < 0.25 and not game.fear > 0.49:
+                self.nodeParticlesColor = (255, 255, 255)  # white
+                self.nodeLum = 'medium'
+                sound.soundManager.sendNodeLuminance(self.nodeLum)
+            elif not game.fear < 0.0 and not game.fear > 0.24:
+                self.nodeParticlesColor = (0, 255, 255)  # very light cyan
+                self.nodeLum = 'high'
+                sound.soundManager.sendNodeLuminance(self.nodeLum)
             self.particlesView.makeParticles(self.nodeParticlesColor)
 
     def render(self, surface):
