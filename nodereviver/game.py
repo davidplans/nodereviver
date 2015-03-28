@@ -17,6 +17,7 @@
     @author: Vincent Petry <PVince81@yahoo.fr>
 '''
 import pygame
+import datetime
 import model
 import view
 import sound
@@ -50,16 +51,17 @@ class Game:
         self._worldLoader = WorldLoader(self._config.dataPath)
         self._gameCount = 0
         self._deaths = 0
-        
-    def _init(self):
-        sound.soundManager.init(self._config)
-
         # generate unique user id
         self.user_id = str(uuid.uuid4())
 
         # calling mixpanel
-        mp = Mixpanel('f3801f20197eb4843b66fd4a78d0f542')
-        mp.track(self.user_id, 'Player started game')
+        self.mp = Mixpanel('f3801f20197eb4843b66fd4a78d0f542')
+
+    def _init(self):
+        sound.soundManager.init(self._config)
+
+        self.mp.people_set_once(self.user_id, {'First Login': datetime.date.today().ctime()})
+        self.mp.track(self.user_id, 'Player started game')
 
         self._initDisplay()
         pygame.display.set_caption('Node Sound by Elise and David Plans and Davide Morelli')
@@ -195,6 +197,7 @@ class Game:
         if state.state == GameState.NEXT_LEVEL or state.state == GameState.RESTART_LEVEL:
             if state.state == GameState.NEXT_LEVEL:
                 state.worldNum += 1
+                self.mp.people_increment(self.user_id, {'Levels played':1})
                 if state.worldNum > self._config.levelsCount:
                     state.setState(GameState.ENDGAME)
                     return;
@@ -283,6 +286,7 @@ class Game:
     def _quitGame(self):
         self._terminated = True
         self._gameState.state = GameState.QUIT
+        self.mp.track(self.user_id, 'User finished game')
 
     def _initWorld(self, worldNum):
         self._player = model.Player()
