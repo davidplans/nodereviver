@@ -183,6 +183,9 @@ class World(object):
         _nextEdgeId = 1
         _nextNodeId = 1
 
+    def progress(self):
+        return self.markedEdges/float(len(self.edges))
+
     def update(self):
         for entity in self.entities:
             entity.update()

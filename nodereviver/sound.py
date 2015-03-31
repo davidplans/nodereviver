@@ -130,5 +130,7 @@ class _SoundManager:
     def sendMove(self):
         libpd_bang('move')
 
+    def sendProgress(self, progress):
+        libpd_float('progress', progress)
 
 soundManager = _SoundManager()

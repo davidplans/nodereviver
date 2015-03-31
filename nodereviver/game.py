@@ -239,13 +239,15 @@ class Game:
             if nFoes > 0:
                 averageDist = float(sumDist) / float(nFoes)
 
+            sound.soundManager.sendProgress(self._world.progress())
+            
             # TODO davide there must be a better way to pass the fear variable around
             # than to use evil global variable? Perhaps we should use config.py to store
             # all the variables like fear, frustration, etc?
             global fear
             fear = 1.0/averageDist
             sound.soundManager.sendFear(fear)
-            pygame.display.set_caption('planning={0} fear={1} frustration={2}'.format(str(planning),str(fear),str(frustration)))
+            pygame.display.set_caption('planning={0} fear={1} frustration={2} progress={3}'.format(str(planning),str(fear),str(frustration),str(self._world.progress())))
 
 
 
