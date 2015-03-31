@@ -434,11 +434,13 @@ class Player(Entity):
         else:
             self.visitedMarked += 1.0
         print self.frustration()
-        
+       
+
     def onStopMoving(self):
         if self.currentNode.type != Node.JOINT:
-            sound.soundManager.play(sound.soundManager.MOVE)
-
+            #sound.soundManager.play(sound.soundManager.MOVE)
+            sound.soundManager.sendMove() #elise put this in
+    
     def onMoving(self, oldPos, newPos):
         if not self.currentEdge.marked:
             diff = vectorDiff(newPos, oldPos)

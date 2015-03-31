@@ -132,5 +132,8 @@ class _SoundManager:
 
     def sendProgress(self, progress):
         libpd_float('progress', progress)
+    def sendNodeLuminance(self, nodeLum):
+        libpd_message('move', nodeLum)
+
 
 soundManager = _SoundManager()
