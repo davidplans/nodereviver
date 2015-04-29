@@ -194,7 +194,7 @@ class ViewContext(object):
         self.biggerFont = pygame.font.Font(config.dataPath + fontFile, 20)
         self._particlesViews = []
 
-
+        # random test comment
 class Display(object):
     def __init__(self, config, screen, gameState):
         self.context = ViewContext(config, screen, gameState)
