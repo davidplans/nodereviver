@@ -8,3 +8,19 @@ dist/
 .idea/scopes/scope_settings.xml
 
 .idea/workspace.xml
+
+spare_pd/chime_test.pd
+
+spare_pd/beatplayer_EVA.pd
+
+spare_pd/chime_orig.pd
+
+spare_pd/hum_test.pd
+
+spare_pd/keys.pd
+
+spare_pd/OLD_hum_standalone.pd
+
+spare_pd/pent_scaling.pd
+
+spare_pd/rob_bass.pd
