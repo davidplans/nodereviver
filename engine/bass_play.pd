@@ -1,4 +1,4 @@
-#N canvas 268 23 1230 711 10;
+#N canvas 81 36 1248 779 10;
 #X obj 250 483 bass_synth;
 #X msg 395 392 48;
 #X msg 140 388 36;
@@ -85,7 +85,7 @@ random \, to give more variation.;
 #X obj 755 397 spigot 1;
 #X text 811 391 This spigot turns off the bass remover (when frustration
 is high \, to keep more complex bass patterns when frustrated);
-#X obj 430 601 s humfreq;
+#X obj 483 627 s humfreq;
 #X obj 393 485 r humtrig;
 #X obj 395 581 f;
 #X text 431 554 takes the frequency of the main bass note \, and sends
