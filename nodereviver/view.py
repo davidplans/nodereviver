@@ -11,7 +11,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
-
+    elise test comment
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -196,7 +196,7 @@ class ViewContext(object):
         self.biggerFont = pygame.font.Font(config.dataPath + fontFile, 20)
         self._particlesViews = []
 
-        # random test commentsssssssssss
+        # random test commentssss
 class Display(object):
     def __init__(self, config, screen, gameState):
         self.context = ViewContext(config, screen, gameState)
