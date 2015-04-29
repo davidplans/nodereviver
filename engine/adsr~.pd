@@ -1,0 +1,74 @@
+#N canvas 0 22 1071 706 10;
+#X obj 100 65 inlet trig;
+#X obj 100 92 sel 0;
+#X msg 101 126 stop;
+#X obj 174 114 t b;
+#X obj 174 241 f \$1;
+#X obj 229 309 pack 0 \$2;
+#X obj 304 397 line~;
+#X obj 304 441 outlet~;
+#X obj 196 64 inlet;
+#X text 196 32 Attack Level;
+#X text 279 33 Attack Speed;
+#X obj 282 66 inlet;
+#X obj 304 155 del \$2;
+#X obj 304 193 f \$4;
+#X obj 304 232 * 0.01;
+#X obj 305 274 * \$1;
+#X obj 305 310 pack 0 \$3;
+#X obj 413 313 pack 0 \$5;
+#X obj 370 69 inlet;
+#X text 372 37 Decay Speed;
+#X obj 508 61 inlet;
+#X text 417 97 Sustain %;
+#X obj 543 181 inlet;
+#X text 539 162 Release Speed;
+#X text 642 41 The leftmost attack pack gets its list from the f object
+that stores to the sub-patch either the first argument \, \$1 \, or
+the value from the second inlet \, level. The pack's right inlet comes
+from either the second argument \, \$2 \, or the third inlet \, attack.
+With pack thus initialised \, when the first inlet \, trig \, receives
+a 1 \, it will trigger the float to send its value to the pack \, which
+will cause the list to generate a smooth ramping output from 0 to the
+attack level \, taking the attack speed in milliseconds to do so.;
+#X text 644 208 The middle pack object controls the drop from the attack
+level down to the sustain level \, taking the decay speed in milliseconds
+to get there. This happens because when the ADSR is triggered \, it
+starts the delay object \, which counts down until the attack speed
+is complete \, and then triggers the f containing the sustain level
+\, expressed as a percentage of the attack level \, to output its value
+through a *0.01. This multiplication object converts from percent and
+sends its value into another * object \, which has the attack level
+set through its right inlet. This puts the converted sustain-level
+value into the left side of the pack object \, which then sends the
+sustain value and decay time in milliseconds to the line.;
+#X text 644 402 At this point \, the ADSR will remain constant at the
+sustain level until it receives a 0 to its leftmost inlet. When the
+0 is received \, the third pack will send a list containing 0 and the
+release value in milliseconds to the line \, which will ramp down smoothly
+to 0;
+#X text 647 500 The line~ object makes the smooth transition from one
+stage of the envelope to the next.;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 1 0 17 0;
+#X connect 1 1 3 0;
+#X connect 2 0 12 0;
+#X connect 3 0 4 0;
+#X connect 3 0 12 0;
+#X connect 4 0 5 0;
+#X connect 5 0 6 0;
+#X connect 6 0 7 0;
+#X connect 8 0 4 1;
+#X connect 8 0 15 1;
+#X connect 11 0 5 1;
+#X connect 11 0 12 1;
+#X connect 12 0 13 0;
+#X connect 13 0 14 0;
+#X connect 14 0 15 0;
+#X connect 15 0 16 0;
+#X connect 16 0 6 0;
+#X connect 17 0 6 0;
+#X connect 18 0 16 1;
+#X connect 20 0 13 0;
+#X connect 22 0 17 1;
