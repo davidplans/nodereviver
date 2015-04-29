@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #N canvas -543 -1414 1769 1003 10;
+=======
+#N canvas 0 22 1769 1003 10;
+>>>>>>> elise-temp
 #N canvas 60 87 1383 818 samples 0;
 #N canvas 0 22 450 278 (subpatch) 0;
 #X array deep 13493 float 3;
@@ -24921,9 +24925,15 @@
 1;
 #X obj 620 237 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
+<<<<<<< HEAD
 #X obj 461 810 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
 #X obj 343 796 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+=======
+#X obj 461 810 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 343 796 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+>>>>>>> elise-temp
 1;
 #X obj 241 245 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
@@ -25001,7 +25011,11 @@
 #X obj 1179 318 tgl 50 0 drums empty empty 17 7 0 10 -1 -4032 -1 1
 1;
 #X text 1232 331 Turn drums on/off;
+<<<<<<< HEAD
 #N canvas 188 75 978 623 filter_delay 1;
+=======
+#N canvas 188 75 978 623 filter_delay 0;
+>>>>>>> elise-temp
 #X obj 168 89 catch~ chords;
 #X obj 289 89 catch~ voice;
 #N canvas 0 22 720 624 filter 0;
@@ -25127,6 +25141,10 @@
 #X obj 722 410 delread~ snaredel 300;
 #X obj 557 431 throw~ snaredelL;
 #X obj 722 431 throw~ snaredelR;
+<<<<<<< HEAD
+=======
+#X text 39 39 comment;
+>>>>>>> elise-temp
 #X connect 0 0 5 0;
 #X connect 0 0 2 0;
 #X connect 1 0 8 0;
@@ -25190,7 +25208,11 @@
 #X text 751 567 find pack b bad type stop audio at start fix hum;
 #X msg 1173 427 1;
 #X obj 1173 405 del 200;
+<<<<<<< HEAD
 #N canvas 396 85 775 546 bass_special 1;
+=======
+#N canvas 396 85 775 546 bass_special 0;
+>>>>>>> elise-temp
 #X obj 6 -41 catch~ basssend;
 #X obj 23 -9 delwrite~ bassdel 2000;
 #X obj 4 362 throw~ bassdelL;
@@ -25285,6 +25307,10 @@
 #X floatatom 446 896 5 0 0 0 - - -;
 #X msg 458 136 30;
 #X obj 458 92 > 0.75;
+<<<<<<< HEAD
+=======
+#X text 829 320 This is a new comment;
+>>>>>>> elise-temp
 #X connect 1 0 18 0;
 #X connect 1 1 66 1;
 #X connect 4 0 5 0;

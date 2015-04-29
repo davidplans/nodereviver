@@ -9,6 +9,7 @@ dist/
 
 .idea/workspace.xml
 
+<<<<<<< HEAD
 spare_pd/chime_test.pd
 
 spare_pd/beatplayer_EVA.pd
@@ -24,3 +25,6 @@ spare_pd/OLD_hum_standalone.pd
 spare_pd/pent_scaling.pd
 
 spare_pd/rob_bass.pd
+=======
+spare_pd/*
+>>>>>>> elise-temp
