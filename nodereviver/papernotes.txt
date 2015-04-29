@@ -1,0 +1,18 @@
+Adaptive audio, on the other hand, is sound that reacts to the game states, responding to various in-game parameters such as time-ins, time-outs, player health, enemy health and so on.
+(Collins 2008).
+
+
+
+
+Section 6 - discussion future work - Cachia paper:
+
+AudioInSpace - refer to it being play tested with the work of Cachia et Al being the control.
+
+Then they list what they would use to test.   Game time, game enjoyment etc etc.  We don't have a way to test perceived enjoyment  
+
+We write a section to say "this paper was a proof of concept, define the same way Cachia does - "mixed initiative metaphor"  
+
+NodeReviver can be play-tested, with similar testing frameworks as MArtinez (GSR stuff) etc.  
+
+experimenting with Markov chains but could try CPPPNs.  Ask Davide whether we can use CPPNs.
+
