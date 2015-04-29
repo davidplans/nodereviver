@@ -1,4 +1,4 @@
-#N canvas 3223 800 1230 711 10;
+#N canvas 131 59 1230 711 10;
 #X obj 250 483 bass_synth;
 #X msg 395 392 48;
 #X msg 140 388 36;
@@ -172,8 +172,8 @@ change).;
 #X obj 8 501 r frustrationreset;
 #X obj 714 405 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X text 738 191 This lovely setup plays the "key" bass note regularly
-\, to make more of a conventional bass line. It changes to the sub-dominant
+#X text 738 191 This setup plays the "key" bass note regularly \, to
+make more of a conventional bass line. It changes to the sub-dominant
 \, and the leading note (flattened) \, according to the pad.;
 #X connect 0 0 45 0;
 #X connect 1 0 0 0;
