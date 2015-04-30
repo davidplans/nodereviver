@@ -19,11 +19,11 @@
 pitches.;
 #X obj 6 -73 r move;
 #X obj 307 -75 r fear;
-#X obj 136 37 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 136 37 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 206 12 <= 0.5;
 #X obj 170 34 &;
-#X obj 217 33 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X obj 217 33 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
 #X obj 137 111 spigot;
 #X obj 245 122 spigot;
@@ -220,7 +220,8 @@ interchangeable. (i.e 51 is the same as 15).;
 #X obj 707 540 EPsynth 28;
 #X obj 775 540 EPsynth 29;
 #X obj 848 540 EPsynth 30;
-#X obj 42 63 send bassdelfear;
+#X obj 559 176 send bassdelfear;
+#X obj 557 201 send chimedim;
 #X connect 1 0 10 0;
 #X connect 1 0 15 0;
 #X connect 2 0 9 0;
@@ -266,6 +267,7 @@ interchangeable. (i.e 51 is the same as 15).;
 #X connect 32 0 86 1;
 #X connect 32 0 124 0;
 #X connect 33 0 21 0;
+#X connect 33 0 125 0;
 #X connect 34 0 25 1;
 #X connect 35 0 28 0;
 #X connect 36 0 0 0;
