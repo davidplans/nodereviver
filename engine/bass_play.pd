@@ -46,7 +46,7 @@ make more of a conventional bass line. It changes to the sub-dominant
 #X obj 848 317 select 1;
 #X obj 907 317 select 1;
 #X obj 271 505 r bassonoff;
-#X obj 271 529 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 271 529 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 572 476 int;
 #X text 612 472 <- this int removes the double bang caused by the routing
