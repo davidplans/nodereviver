@@ -110,7 +110,7 @@ interchangeable. (i.e 51 is the same as 15).;
 #X obj 81 326 s 4a;
 #X floatatom 541 44 5 0 0 0 - - -;
 #X floatatom 606 74 5 0 0 0 - - -;
-#X obj 478 -22 r nodelum;
+#X obj 478 -22 r nodeLum;
 #X connect 6 0 21 0;
 #X connect 7 0 22 0;
 #X connect 8 0 23 0;

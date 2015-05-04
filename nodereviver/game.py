@@ -206,6 +206,7 @@ class Game:
 
         if state.state in [GameState.GAME, GameState.TITLE] and self._world.hasAllEdgesMarked():
             self.onLevelEnd()
+            sound.soundManager.sendVictory()
 
         if state.state == GameState.GAME:
             # check for player collision
