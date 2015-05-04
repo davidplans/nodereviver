@@ -125,7 +125,7 @@ class _SoundManager:
         libpd_bang('death')
 
     def sendVictory(self):
-        libpd_bang('victory')
+        libpd_bang('win')
 
     def sendMove(self):
         libpd_bang('move')
