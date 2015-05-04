@@ -627,21 +627,28 @@ class PlayerView(EntityView):
             # TODO davide: I cannot make this work somehow...it doesn't change particle color according to fear level
             self.nodeParticlesColor = (255, 255, 255)
             self.nodeLum = '3'
-            if not game.fear < 0.75:
+            if not game.fear < 0.83:
                 self.nodeParticlesColor = (192, 192, 192)  # grey
                 self.nodeLum = '1'
                 sound.soundManager.sendNodeLuminance(self.nodeLum)
-            elif not game.fear < 0.5 and not game.fear > 0.74:
+            elif not game.fear < 0.66 and not game.fear > 0.82:
                 self.nodeParticlesColor = (224, 224, 224)  # light gray
                 self.nodeLum = '2'
                 sound.soundManager.sendNodeLuminance(self.nodeLum)
-            elif not game.fear < 0.25 and not game.fear > 0.49:
+            elif not game.fear < 0.49 and not game.fear > 0.65:
                 self.nodeParticlesColor = (255, 255, 255)  # white
                 self.nodeLum = '3'
                 sound.soundManager.sendNodeLuminance(self.nodeLum)
-            elif not game.fear < 0.0 and not game.fear > 0.24:
+            elif not game.fear < 0.33 and not game.fear > 0.48:
                 self.nodeParticlesColor = (0, 255, 255)  # very light cyan
                 self.nodeLum = '4'
+            elif not game.fear < 0.16 and not game.fear > 0.32:
+                self.nodeParticlesColor = (255, 255, 255)  # white
+                self.nodeLum = '5'
+                sound.soundManager.sendNodeLuminance(self.nodeLum)
+            elif not game.fear < 0.0 and not game.fear > 0.15:
+                self.nodeParticlesColor = (0, 255, 255)  # very light cyan
+                self.nodeLum = '6'    
                 sound.soundManager.sendNodeLuminance(self.nodeLum)
             self.particlesView.makeParticles(self.nodeParticlesColor)
 
